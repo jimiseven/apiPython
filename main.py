@@ -13,13 +13,26 @@ def obtener_usuarios():
 # Endpoint para crear un nuevo usuario
 @app.route('/usuarios', methods=['POST'])
 def crear_usuario():
-    nuevo_usuario = {
-        "nombre": request.json.get("nombre"),
-        "apellido": request.json.get("apellido"),
-        "mail": request.json.get("mail")
-    }
-    usuarios.append(nuevo_usuario)
-    return jsonify(nuevo_usuario), 201
+    datos = request.json  # Aquí datos será una lista si envías un array JSON
+    if isinstance(datos, list):
+        for usuario in datos:
+            nuevo_usuario = {
+                "nombre": usuario.get("nombre"),
+                "apellido": usuario.get("apellido"),
+                "mail": usuario.get("mail")
+            }
+            usuarios.append(nuevo_usuario)
+        return jsonify({"mensaje": "Usuarios creados exitosamente"}), 201
+    else:
+        # Caso en el que se envía un solo usuario como JSON
+        nuevo_usuario = {
+            "nombre": datos.get("nombre"),
+            "apellido": datos.get("apellido"),
+            "mail": datos.get("mail")
+        }
+        usuarios.append(nuevo_usuario)
+        return jsonify(nuevo_usuario), 201
+
 
 # Endpoint para obtener un usuario por email
 @app.route('/usuarios/<string:mail>', methods=['GET'])
